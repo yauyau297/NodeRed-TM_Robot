@@ -1,0 +1,311 @@
+[
+    {
+        "id": "54201766e53582a7",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "4dcaae253779d8c6",
+        "type": "modbus-server",
+        "z": "54201766e53582a7",
+        "name": "",
+        "logEnabled": false,
+        "hostname": "0.0.0.0",
+        "serverPort": 10502,
+        "responseDelay": 100,
+        "delayUnit": "ms",
+        "coilsBufferSize": 10000,
+        "holdingBufferSize": 10000,
+        "inputBufferSize": 10000,
+        "discreteBufferSize": 10000,
+        "showErrors": false,
+        "x": 240,
+        "y": 60,
+        "wires": [
+            [],
+            [],
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "87934bb7c39d9618",
+        "type": "inject",
+        "z": "54201766e53582a7",
+        "name": "Send Message",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "Hello World!",
+        "payloadType": "str",
+        "x": 140,
+        "y": 220,
+        "wires": [
+            [
+                "2aad9e20dff1e5c7"
+            ]
+        ]
+    },
+    {
+        "id": "11ea187bbdb2cd17",
+        "type": "modbus-write",
+        "z": "54201766e53582a7",
+        "name": "Write to Modbus",
+        "showStatusActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "unitid": "",
+        "dataType": "MHoldingRegisters",
+        "adr": "1",
+        "quantity": "5",
+        "server": "790b46a78b33b4e0",
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 540,
+        "y": 120,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "f37d73ed6f0264e3",
+        "type": "debug",
+        "z": "54201766e53582a7",
+        "name": "Debug Write",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "f4e287f6b028bfde",
+        "type": "modbus-read",
+        "z": "54201766e53582a7",
+        "name": "Read from Modbus",
+        "topic": "",
+        "showStatusActivities": false,
+        "logIOActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "unitid": "",
+        "dataType": "HoldingRegister",
+        "adr": "0",
+        "quantity": "8",
+        "rate": "500",
+        "rateUnit": "ms",
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "server": "790b46a78b33b4e0",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "x": 350,
+        "y": 320,
+        "wires": [
+            [
+                "544b398d1b1d341f"
+            ],
+            [
+                "1a58f7826538e93b",
+                "919443b4e16624da"
+            ]
+        ]
+    },
+    {
+        "id": "8965762d6da9a32c",
+        "type": "debug",
+        "z": "54201766e53582a7",
+        "name": "Debug Read",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 770,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "64f2dd5b.99ca14",
+        "type": "function",
+        "z": "54201766e53582a7",
+        "name": "String to ASCII",
+        "func": "var string = msg.payload;\nvar asciiValues = [];\nfor (var i = 0; i < string.length; i += 2) {\n    var combined = string.charCodeAt(i);\n    if (i + 1 < string.length) {\n        combined = combined * 256 + string.charCodeAt(i + 1);\n    }\n    asciiValues.push(combined);\n}\nmsg.payload = asciiValues;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "88b68f8e.20ea9",
+        "type": "function",
+        "z": "54201766e53582a7",
+        "name": "ASCII to String",
+        "func": "var asciiValues = msg.payload;\nvar string = '';\nfor (var i = 0; i < asciiValues.length; i++) {\n    var firstChar = Math.floor(asciiValues[i] / 256);\n    var secondChar = asciiValues[i] % 256;\n    string += String.fromCharCode(firstChar);\n    if (secondChar > 0) {\n        string += String.fromCharCode(secondChar);\n    }\n}\nmsg.payload = string;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2aad9e20dff1e5c7",
+        "type": "function",
+        "z": "54201766e53582a7",
+        "name": "String to Modbus",
+        "func": "var buf = Buffer.from(msg.payload, 'utf8');\nvar data = [];\nfor (var i = 0; i < buf.length; i += 2) {\n    var val = buf[i] * 256;\n    if (i + 1 < buf.length) {\n        val += buf[i + 1];\n    }\n    data.push(val);\n}\nmsg.payload = { value: data, 'fc': 16, 'unitid': 1, 'address': 0 , 'quantity': data.length };\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 350,
+        "y": 220,
+        "wires": [
+            [
+                "b6cdba9da1116d9d"
+            ]
+        ]
+    },
+    {
+        "id": "1a58f7826538e93b",
+        "type": "function",
+        "z": "54201766e53582a7",
+        "name": "Modbus to String",
+        "func": "if (typeof msg.payload === 'object' && msg.payload.data) {\n    var data = msg.payload.data;\n    var buf = Buffer.alloc(data.length * 2);\n    for (var i = 0; i < data.length; i++) {\n        buf[i * 2] = data[i] / 256;\n        buf[i * 2 + 1] = data[i] % 256;\n    }\n    msg.payload = buf.toString('utf8');\n    return msg;\n} else {\n    node.error('msg.payload.data is undefined. Please make sure the previous node is outputting the data in the expected format.');\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 320,
+        "wires": [
+            [
+                "8965762d6da9a32c"
+            ]
+        ]
+    },
+    {
+        "id": "b6cdba9da1116d9d",
+        "type": "modbus-flex-write",
+        "z": "54201766e53582a7",
+        "name": "",
+        "showStatusActivities": false,
+        "showErrors": false,
+        "showWarnings": true,
+        "server": "790b46a78b33b4e0",
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": false,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 570,
+        "y": 220,
+        "wires": [
+            [
+                "f37d73ed6f0264e3"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "919443b4e16624da",
+        "type": "debug",
+        "z": "54201766e53582a7",
+        "name": "debug 1",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 530,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "544b398d1b1d341f",
+        "type": "debug",
+        "z": "54201766e53582a7",
+        "name": "debug 2",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 530,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "790b46a78b33b4e0",
+        "type": "modbus-client",
+        "name": "Testing_Client",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "127.0.0.1",
+        "tcpPort": "10502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": "1",
+        "commandDelay": "1",
+        "clientTimeout": "1000",
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": "2000",
+        "parallelUnitIdsAllowed": true,
+        "showWarnings": true,
+        "showLogs": true
+    }
+]
